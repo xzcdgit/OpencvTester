@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ChildParam</class>
+ <widget class="QDialog" name="ChildParam">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>675</width>
+    <height>664</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>参数调整表</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_13" rowstretch="1,1" columnstretch="1,1,1,1,1,1" rowminimumheight="1,1" columnminimumwidth="1,1,1,1,1,1">
+   <property name="verticalSpacing">
+    <number>6</number>
+   </property>
+   <item row="0" column="2">
+    <widget class="QGroupBox" name="groupBox_10">
+     <property name="title">
+      <string>操作流程</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_10">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>自动刷新</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="checkBox_3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>仅到选中项</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="3">
+       <widget class="QListWidget" name="listWidget">
+        <property name="dragEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="dragDropMode">
+         <enum>QAbstractItemView::NoDragDrop</enum>
+        </property>
+        <property name="defaultDropAction">
+         <enum>Qt::CopyAction</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="pushButton_12">
+        <property name="text">
+         <string>参数说明</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="pushButton_11">
+        <property name="text">
+         <string>刷新图像</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="3" colspan="3">
+    <widget class="QGroupBox" name="groupBox_12">
+     <property name="title">
+      <string>操作提示</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QTextBrowser" name="textBrowser"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="6">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>当前选择</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="1">
+       <widget class="QGroupBox" name="groupBox_7">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="1">
+          <widget class="QSlider" name="horizontalSlider_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+           <property name="tickInterval">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QGroupBox" name="groupBox_8">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="1">
+          <widget class="QSlider" name="horizontalSlider_3">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="groupBox_6">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="1">
+          <widget class="QSlider" name="horizontalSlider">
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="invertedAppearance">
+            <bool>false</bool>
+           </property>
+           <property name="invertedControls">
+            <bool>false</bool>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QGroupBox" name="groupBox_13">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_12">
+         <item row="0" column="1">
+          <widget class="QSlider" name="horizontalSlider_5">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QGroupBox" name="groupBox_11">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_11">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSlider" name="horizontalSlider_4">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QGroupBox" name="groupBox_15">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_15">
+         <item row="0" column="1">
+          <widget class="QSlider" name="horizontalSlider_7">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QGroupBox" name="groupBox_14">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_14">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSlider" name="horizontalSlider_6">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QGroupBox" name="groupBox_9">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="1">
+          <widget class="QSlider" name="horizontalSlider_8">
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="invertedAppearance">
+            <bool>false</bool>
+           </property>
+           <property name="invertedControls">
+            <bool>false</bool>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::NoTicks</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>图像操作选项</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="2">
+       <widget class="QListWidget" name="listWidget_2">
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
+        <property name="dragEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="dragDropMode">
+         <enum>QAbstractItemView::NoDragDrop</enum>
+        </property>
+        <item>
+         <property name="text">
+          <string>灰度化</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>高斯滤波</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>二值化</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>膨胀</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>腐蚀</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>开运算</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>闭运算</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>边缘检测</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>轮廓查找</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="text">
+         <string>插入模式</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
