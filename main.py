@@ -132,11 +132,24 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
             i.valueChanged.connect(self.method_get_slider_value)
         #图像刷新按键
         self.pushButton_11.clicked.connect(self.method_emit_fresh)
+        #参数说明
+        self.pushButton_12.clicked.connect(self.method_opt_instruction)
 
     def setParam(self):
         '''
         预设的各类参数
         '''
+        self.opt_instruction_str_list = {
+            '灰度化':'将RGB图像转化为灰度图像（3通道变为单通道）\n如果将单通道图像进行灰度化操作会报错\n无可设置参数\n', \
+            '高斯滤波':'将图像进行高斯滤波操作\n参数说明\n卷积核高：高斯卷积核的高度，应为奇数\n卷积核长：高斯卷积核的宽度，应为奇数\n', \
+            '二值化':'将图像按照指定阈值处理为两种值，是轮廓查找的前提条件\n参数说明\n阈值：大于该值的值会被设置为设定值1，否则设置为设定值2\n最大值：通常是设定值1\n二值化算法类型：包括THRESH_BINARY(0) THRESH_BINARY_INV(1) THRESH_TRUNC(2) THRESH_TOZERO(3) THRESH_TOZERO_INV(4) 这五种类型，具体说明请自行查阅\n', \
+            '膨胀':'将图像的亮值部分扩大,可以用来消除黑色的噪点\n参数说明\n卷积核高：膨胀内核的高度\n卷积核长：膨胀内核的长度\n膨胀次数：膨胀操作的循环次数', \
+            '腐蚀':'将图像的暗值部分扩大,可以用来消除白色的噪点\n参数说明\n卷积核高：腐蚀内核的高度\n卷积核长：腐蚀内核的长度\n腐蚀次数：腐蚀操作的循环次数', \
+            '开运算':'先腐蚀再膨胀，该操作可以在保持图像整体大小不变的情况下消除白色噪点\n参数说明\n卷积核高：操作内核的高度\n卷积核长：操作内核的长度\n', \
+            '闭运算':'先膨胀再腐蚀，该操作可以在保持图像整体大小不变的情况下消除黑色噪点\n参数说明\n卷积核高：操作内核的高度\n卷积核长：操作内核的长度\n', \
+            '边缘检测':'特指Canny算法的边缘检测，请自行查阅该算法的说明', \
+            '轮廓查找':'根据二值图描绘出图像轮廓，实际返回的是散点组，这里为了方便调试，使用drawContours将散点组绘制在空白画布上\n参数说明\n轮廓的检索模式：cv2.RETR_EXTERNAL(0)表示只检测外轮廓\ncv2.RETR_LIST(1)检测的轮廓不建立等级关系\ncv2.RETR_CCOMP(2)建立两个等级的轮廓，上面的一层为外边界，里面的一层为内孔的边界信息。如果内孔内还有一个连通物体，这个物体的边界也在顶层。\ncv2.RETR_TREE(3)建立一个等级树结构的轮廓。\n轮廓的近似办法：cv2.CHAIN_APPROX_NONE(0)存储所有的轮廓点，相邻的两个点的像素位置差不超过1，即max（abs（x1-x2），abs（y2-y1））==1\ncv2.CHAIN_APPROX_SIMPLE(1)压缩水平方向，垂直方向，对角线方向的元素，只保留该方向的终点坐标，例如一个矩形轮廓只需4个点来保存轮廓信息\ncv2.CHAIN_APPROX_TC89_L1(2)，CV_CHAIN_APPROX_TC89_KCOS(3)使用teh-Chinl chain 近似算法\n'
+        }   
         self.operate_param_list = []
         self.operate_index = -1
         self.operate_name_list = ['灰度化', '高斯滤波','二值化','膨胀','腐蚀','开运算','闭运算','边缘检测','轮廓查找']
@@ -192,9 +205,6 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
             method_name = self.sender().currentItem().text()
             self.listWidget.addItem(method_name)
 
-
-            
-
     def method_remove_item(self):
         '''
         移除item中的指定项
@@ -216,7 +226,7 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         if item_name in self.operate_name_list:
             operate_method_index = self.operate_name_list.index(item_name) #获取序号
             (self.operate_method_list[operate_method_index])() #执行对应的方法函数
-            self.method_emit_fresh()#刷新界面
+            self.method_auto_fresh()#刷新界面
 
     def method_set_ui(self,enabled_list:list[bool]=[False,False,False,False,False,False,False,False],name_list:list[str]=[' ',' ',' ',' ',' ',' ',' ',' '],value_list:list[int]=[0,0,0,0,0,0,0,0],lowlimit_list:list[int]=[0,0,0,0,0,0,0,0],uplimit_list:list[int]=[0,0,0,0,0,0,0,0]):
         '''
@@ -257,7 +267,7 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         高斯模糊有关的ui修改操作
         '''
         #print('gauss blur')
-        name_list = ['卷积核宽','卷积核长','X向标准差','Y向标准差',' ',' ',' ',' ']
+        name_list = ['卷积核高','卷积核长','X向标准差','Y向标准差',' ',' ',' ',' ']
         enabled_list = [True,True,True,True,False,False,False,False]
         value_list = self.operate_param_list[self.operate_index][1:]
         lowlimit_list = [0]*8
@@ -281,7 +291,7 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         膨胀
         '''
         #print('dilate')
-        name_list = ['卷积核宽','卷积核长','膨胀次数',' ',' ',' ',' ',' ']
+        name_list = ['卷积核高','卷积核长','膨胀次数',' ',' ',' ',' ',' ']
         enabled_list = [True,True,True,False,False,False,False,False]
         value_list = self.operate_param_list[self.operate_index][1:]
         lowlimit_list = [0]*8
@@ -293,7 +303,7 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         腐蚀
         '''
         #print('erode')
-        name_list = ['卷积核宽','卷积核长','腐蚀次数',' ',' ',' ',' ',' ']
+        name_list = ['卷积核高','卷积核长','腐蚀次数',' ',' ',' ',' ',' ']
         enabled_list = [True,True,True,False,False,False,False,False]
         value_list = self.operate_param_list[self.operate_index][1:]
         lowlimit_list = [0]*8
@@ -306,7 +316,7 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         先腐蚀后膨胀
         '''
         #print('opening')
-        name_list = ['卷积核宽','卷积核长',' ',' ',' ',' ',' ',' ']
+        name_list = ['卷积核高','卷积核长',' ',' ',' ',' ',' ',' ']
         enabled_list = [True,True,False,False,False,False,False,False]
         value_list = self.operate_param_list[self.operate_index][1:]
         lowlimit_list = [0]*8
@@ -319,7 +329,7 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         先膨胀后腐蚀
         '''
         #print('closing')
-        name_list = ['卷积核宽','卷积核长',' ',' ',' ',' ',' ',' ']
+        name_list = ['卷积核高','卷积核长',' ',' ',' ',' ',' ',' ']
         enabled_list = [True,True,False,False,False,False,False,False]
         value_list = self.operate_param_list[self.operate_index][1:]
         lowlimit_list = [0]*8
@@ -330,7 +340,7 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         边缘检测
         '''
         #print('canny')
-        name_list = ['低阈值','高阈值',' ',' ',' ',' ',' ',' ']
+        name_list = ['最小阈值','最大阈值',' ',' ',' ',' ',' ',' ']
         enabled_list = [True,True,False,False,False,False,False,False]
         value_list = self.operate_param_list[self.operate_index][1:]
         lowlimit_list = [0]*8
@@ -346,7 +356,7 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         enabled_list = [True,True,False,False,False,False,False,False]
         value_list = self.operate_param_list[self.operate_index][1:]
         lowlimit_list = [0]*8
-        uplimit_list = [3,1,0,0,0,0,0,0]
+        uplimit_list = [3,3,0,0,0,0,0,0]
         self.method_set_ui(enabled_list,name_list,value_list,lowlimit_list,uplimit_list)
 
 
@@ -354,12 +364,17 @@ class ChildParamWindow(QDialog, Ui_ChildParam):
         '''
         向主类发送图像刷新信号 按键
         '''
-        print(self.listWidget.currentRow())
         if self.checkBox_3.isChecked() == True and self.listWidget.currentRow()>=0:
             param_list = self.operate_param_list[0:self.listWidget.currentRow()+1]
         else:
             param_list = self.operate_param_list
         self.signal_img_fresh.emit(param_list)
+
+    def method_opt_instruction(self):
+        if self.listWidget.currentRow()>=0:
+            if self.listWidget.currentItem().text() in self.opt_instruction_str_list.keys():
+                opt_instruction_str = self.opt_instruction_str_list[self.listWidget.currentItem().text()]
+                QMessageBox.information(self,'参数说明',opt_instruction_str,QMessageBox.Ok)
 
 class MyMainWindow(QMainWindow, Ui_Main.Ui_MainWindow):
     
@@ -464,7 +479,8 @@ class MyMainWindow(QMainWindow, Ui_Main.Ui_MainWindow):
         print('action_3')
 
     def doc(self,tips):
-        print(tips)
+        pass
+        #print(tips)
 
     def closeEvent(self, event) -> None:
         reply = QMessageBox.question(self, '提示',
