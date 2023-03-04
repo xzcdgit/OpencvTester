@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QCoreApplication
 from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QFileDialog, QMessageBox
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import QImage, QPixmap, QWheelEvent, QCursor
 import sys
 import os
 import cv2
@@ -13,8 +13,7 @@ class QtOpencv():
     '''opencv 图像操作的具体实现'''
     def __init__(self) -> None:
         #self.operate_name_list = ['灰度化', '高斯滤波','二值化','膨胀','腐蚀','开运算','闭运算','边缘检测','轮廓查找']
-        self.img = None
-        self.img_readed = False
+        pass
 
     def method_open_img(self, input_dir:str):
         '''
@@ -23,16 +22,11 @@ class QtOpencv():
         '''
         img_bgr = cv2.imread(input_dir)
         img_rgb = cv2.cvtColor(img_bgr,cv2.COLOR_BGR2RGB)
-        self.img = img_rgb
-        self.img_readed = True
-        return self.img
-        
-    def method_deal_img(self, param_list:list):
+        return img_rgb
+
+    def method_deal_img(self,img ,param_list:list):
         tips = ''
-        if self.img_readed == False:
-            tips += '未加载图像\n'
-            return 1, 0, tips
-        img_res = self.img.copy()
+        img_res = img.copy()
         for i in param_list:
             #RGB图像转灰度图像
             if i[0] == 0:
@@ -94,7 +88,59 @@ class QtOpencv():
                 except cv2.error:
                     opt_index = param_list.index(i)
                     return 2,0,'错误步骤序号：'+str(opt_index)+' 图像通道错误，检查进行轮廓查找操作的图像是否为单通道图像\n'
-        return 0, img_res, tips
+        img_show = img_res #根据需要显示的位置截取显示部分传回
+        return 0, img_show, tips
+
+    def method_export_code(self,param_list:list):
+        code_str = 'def func_opencv_demo(img):\n'
+        for i in param_list:
+            if i[0] == 0:
+                code_str += "    img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)\n"
+            #图像高斯模糊
+            elif i[0] == 1:
+                if i[1]%2 == 0:
+                    i[1] += 1
+                if i[2]%2 == 0:
+                    i[2] += 1
+                code_str += "    img = cv2.GaussianBlur(img, (%d, %d, %d)\n" % (i[1],i[2],i[3])
+            #图像二值化
+            elif i[0] == 2:
+                code_str += "    res, img = cv2.threshold(img, %d, %d, %d)\n" % (i[1],i[2],i[3])
+            #膨胀
+            elif i[0] == 3:
+                if i[1] == 0:
+                    i[1] += 1
+                if i[2] == 0:
+                    i[2] += 1
+                code_str += "    kernel = np.ones((%d, %d), np.uint8)\n" % (i[1],i[2])
+                code_str += "    img = cv2.dilate(img, kernel, %d)\n" % (i[3])
+            #腐蚀
+            elif i[0] == 4:
+                if i[1] == 0:
+                    i[1] += 1
+                if i[2] == 0:
+                    i[2] += 1
+                code_str += "    kernel = np.ones((%d, %d), np.uint8)\n" % (i[1],i[2])
+                code_str += "    img = cv2.erode(img, kernel, %d)\n" % (i[3])
+            #开运算
+            elif i[0] == 5:
+                code_str += "    kernel = np.ones((%d, %d), np.uint8)\n" % (i[1],i[2])
+                code_str += "    img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)\n"
+            #闭运算
+            elif i[0] == 6:
+                code_str += "    kernel = np.ones((%d, %d), np.uint8)\n" % (i[1],i[2])
+                code_str += "    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)\n"
+            #边缘检测
+            elif i[0] == 7:
+                code_str += "    img = cv2.Canny(img, %d, %d)\n" % (i[1],i[2])
+            #轮廓查找
+            elif i[0] == 8:
+                code_str += "    contours, hierarchy = cv2.findContours(img, %d, %d)\n" % (i[1],i[2])
+                code_str += "    model = np.zeros((img.shape[0], img.shape[1], 3), np.uint8)\n"
+                code_str += "    img = cv2.drawContours(model, contours, -1, (255, 255, 0), 1)\n"
+        return code_str
+
+            
 
 class ChildParamWindow(QDialog, Ui_ChildParam.Ui_ChildParam):
     signal_img_fresh = pyqtSignal(list)#信号 发往主界面类 刷新主界面显示图像信号
@@ -121,6 +167,8 @@ class ChildParamWindow(QDialog, Ui_ChildParam.Ui_ChildParam):
         self.pushButton_11.clicked.connect(self.method_emit_fresh)
         #参数说明
         self.pushButton_12.clicked.connect(self.method_opt_instruction)
+        #导出操作代码
+        self.pushButton.clicked.connect(self.method_opt_code_export)
 
     def setParam(self):
         '''
@@ -149,6 +197,12 @@ class ChildParamWindow(QDialog, Ui_ChildParam.Ui_ChildParam):
         #初始禁用box list中所有的groupBox
         for i in self.groupBox_list:
             i.setEnabled(False)
+
+    def method_opt_code_export(self):
+        self.textBrowser.clear() #清空文本框
+        tmp = QtOpencv()
+        self.textBrowser.setText(tmp.method_export_code(self.operate_param_list))
+        
 
     def method_auto_fresh(self):
         '''
@@ -362,6 +416,13 @@ class MyMainWindow(QMainWindow, Ui_Main.Ui_MainWindow):
         self.setSign()#设置槽和信号
         self.default_out_dir = ''
         self.default_input_dir = ''
+        self.enlarge_num = 0
+        self.label.setScaledContents(True) #图片自适应label的大小
+        self.img = None
+        self.img_xstart_index = 0
+        self.img_xend_index = 0
+        self.img_ystart_index = 0
+        self.img_yend_index = 0
     def iniChiled(self):
         '''
         创建子类
@@ -380,12 +441,12 @@ class MyMainWindow(QMainWindow, Ui_Main.Ui_MainWindow):
 
     def slot_fresh_label_img(self,param_list:list[int]):
         '''
-        接收刷新的paramlist
+        子窗口修改参数时会触发该槽函数，该槽函数会调用opencv处理类处理图像再重新显示在label上
         '''
-        res, img, tips = self.qtopencv.method_deal_img(param_list)
+        res, img, tips = self.qtopencv.method_deal_img(self.img,param_list)
         if res == 0:
             tips = '操作成功\n' + tips
-            self.method_label_img(img)
+            self.method_label_show_img(img)
         else:
             tips = '操作失败\n'+tips
         self.testerwindow.textBrowser.append(tips)
@@ -398,8 +459,13 @@ class MyMainWindow(QMainWindow, Ui_Main.Ui_MainWindow):
     def slot_open_img(self):
         self.default_input_dir = self.__method_chose_file() #获取图像路径
         if self.default_input_dir != '':
-            img_rgb = self.qtopencv.method_open_img(self.default_input_dir)
-            self.method_label_img(img_rgb)
+            read_img = self.qtopencv.method_open_img(self.default_input_dir)
+            self.img = np.array(read_img)
+            self.img_xstart_index = 0
+            self.img_xend_index = self.img.shape[1]
+            self.img_ystart_index = 0
+            self.img_yend_index = self.img.shape[0]
+            self.method_label_show_img(self.img)
         else:
             print('路径为空')
 
@@ -409,21 +475,26 @@ class MyMainWindow(QMainWindow, Ui_Main.Ui_MainWindow):
         '''
         self.testerwindow.show()
 
-    def method_label_img(self,img_rgb):
+    def method_label_show_img(self,img):
         '''
         在label里显示图片
         '''
-        image = np.array(img_rgb)
+        img = np.array(img)
         #判断图像是否为单通道图像
-        if len(image.shape) == 3:
+        if len(img.shape) == 3:
             #print('多通道图像')
-            image = QImage(img_rgb,img_rgb.shape[1],img_rgb.shape[0],QImage.Format_RGB888)
+            print()
+            img = img[self.img_ystart_index:self.img_yend_index,self.img_xstart_index:self.img_xend_index,:]
+            
+            img = np.array(img)
+            img = QImage(img.data,img.shape[1],img.shape[0],img.shape[1]*3,QImage.Format_RGB888)
         else:
             #print('单通道图像')
-            image = QImage(img_rgb,img_rgb.shape[1],img_rgb.shape[0],QImage.Format_Indexed8)
-        image = QPixmap(image) #加载图片
-        self.label.setScaledContents(True) #图片自适应label的大小
-        self.label.setPixmap(image) #显示图片
+            img = img[self.img_ystart_index:self.img_yend_index,self.img_xstart_index:self.img_xend_index]
+            img = np.array(img)
+            img = QImage(img.data,img.shape[1],img.shape[0],img.shape[1],QImage.Format_Indexed8)
+        img = QPixmap(img) #加载图片
+        self.label.setPixmap(img) #显示图片
 
     def paintEvent(self, QPaintEvent) -> None:
         '''
@@ -466,6 +537,49 @@ class MyMainWindow(QMainWindow, Ui_Main.Ui_MainWindow):
             sys.exit(0)
         else:
             event.ignore()
+
+    def wheelEvent(self, a0:QWheelEvent) -> None:
+        '''
+        通过滚轮可以放大或者缩小图像
+        '''
+        #判定鼠标位置是否在滚轮内（只有鼠标位于控件内滚动滚轮事件才有效）
+        is_contain = self.label.geometry().contains(self.mapFromGlobal(QCursor.pos()))
+        if is_contain:
+            #获取滚轮的滚动方向
+            angle = a0.angleDelta()
+            angle_y = angle.y()
+            #计算放大或者缩小的倍率
+            xp = self.mapFromGlobal(QCursor.pos()).x()/self.label.geometry().width()
+            yp = self.mapFromGlobal(QCursor.pos()).y()/self.label.geometry().height()
+            wsp = 0.1*xp
+            wep = 0.1*(1.0-xp)
+            hsp = 0.1*yp
+            hep = 0.1*(1.0-yp)
+            #放大操作
+            if angle_y>0:
+                w0 = self.img_xend_index - self.img_xstart_index
+                h0 = self.img_yend_index - self.img_ystart_index
+                if w0>3 and h0 >3:
+                    self.img_xstart_index = int(self.img_xstart_index + w0*wsp)
+                    self.img_xend_index = int(self.img_xend_index -w0*wep)
+                    self.img_ystart_index = int(self.img_ystart_index + h0*hsp)
+                    self.img_yend_index = int(self.img_yend_index - h0*hep)
+            #缩小操作
+            elif angle_y<0:
+                w0 = self.img_xend_index - self.img_xstart_index
+                h0 = self.img_yend_index - self.img_ystart_index
+                self.img_xstart_index = int(self.img_xstart_index - w0*wsp)
+                self.img_xend_index = int(self.img_xend_index + w0*wep)
+                self.img_ystart_index = int(self.img_ystart_index -h0*hsp)
+                self.img_yend_index = int(self.img_yend_index + h0*hep)
+                if self.img_xstart_index<0 or self.img_ystart_index<0 or self.img_xend_index >self.img.shape[1] or self.img_yend_index>self.img.shape[0]:
+                    self.img_xstart_index = 0
+                    self.img_xend_index = self.img.shape[1]
+                    self.img_ystart_index = 0
+                    self.img_yend_index = self.img.shape[0]
+            #调用子窗口的图片刷新图像 间接向主窗口发送刷新图像信号（因为子窗口才有图像的处理参数数据）
+            self.testerwindow.method_emit_fresh()
+        return super().wheelEvent(a0)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

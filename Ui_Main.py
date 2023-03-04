@@ -26,7 +26,7 @@ class Ui_MainWindow(object):
         self.label.setGeometry(QtCore.QRect(0, 0, 16, 16))
         self.label.setText("")
         self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.widget, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.widget, 1, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))

@@ -18,7 +18,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QWidget" name="widget" native="true">
       <widget class="QLabel" name="label">
        <property name="geometry">
